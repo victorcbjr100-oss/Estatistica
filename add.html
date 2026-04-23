@@ -1,0 +1,38 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Novo Registro</title>
+  <link rel="stylesheet" href="style.css">
+</head>
+
+<body>
+
+<div class="app">
+
+  <header class="topbar">
+    <button onclick="goBack()">←</button>
+    <h1>Novo Registro</h1>
+  </header>
+
+  <main class="main">
+
+    <input type="date" id="date">
+
+    <input type="text" id="subject" placeholder="Matéria">
+    <input type="text" id="topic" placeholder="Tema/Subtema">
+
+    <input type="number" id="total" placeholder="Total de questões">
+    <input type="number" id="correct" placeholder="Acertos">
+
+    <button class="primary" onclick="saveData()">Salvar</button>
+
+  </main>
+
+</div>
+
+<script src="app.js"></script>
+
+</body>
+</html>
