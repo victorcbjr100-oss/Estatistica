@@ -4,15 +4,19 @@
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>Histórico</title>
+
   <link rel="stylesheet" href="style.css">
+  <script src="https://unpkg.com/lucide@latest"></script>
 </head>
 
 <body>
 
 <div class="app">
 
-  <header class="topbar">
-    <button onclick="goBack()">←</button>
+  <header class="header">
+    <button onclick="goBack()">
+      <i data-lucide="arrow-left"></i>
+    </button>
     <h1>Histórico</h1>
   </header>
 
@@ -22,6 +26,7 @@
 
 <script src="app.js"></script>
 <script>
+lucide.createIcons();
 loadHistory();
 </script>
 
