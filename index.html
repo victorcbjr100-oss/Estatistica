@@ -3,52 +3,85 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Study Tracker</title>
+  <title>Study</title>
 
   <link rel="stylesheet" href="style.css">
   <link rel="manifest" href="manifest.json">
+
+  <!-- Ícones -->
+  <script src="https://unpkg.com/lucide@latest"></script>
 </head>
 
 <body>
 
 <div class="app">
 
-  <header class="topbar">
-    <h1>Study Tracker</h1>
+  <!-- Header -->
+  <header class="header">
+    <h1>Study</h1>
   </header>
 
+  <!-- Conteúdo -->
   <main class="main">
 
-    <div class="card">
-      <h3>Total de questões</h3>
-      <p id="total">0</p>
+    <div class="grid">
+
+      <div class="card">
+        <div class="card-top">
+          <i data-lucide="book-open"></i>
+          <span>Total</span>
+        </div>
+        <h2 id="total">0</h2>
+      </div>
+
+      <div class="card">
+        <div class="card-top">
+          <i data-lucide="target"></i>
+          <span>Aproveitamento</span>
+        </div>
+        <h2 id="accuracy">0%</h2>
+      </div>
+
     </div>
 
     <div class="card">
-      <h3>Aproveitamento</h3>
-      <p id="accuracy">0%</p>
-    </div>
+      <div class="card-top">
+        <i data-lucide="filter"></i>
+        <span>Filtrar matéria</span>
+      </div>
 
-    <div class="card">
-      <h3>Meta diária</h3>
-      <input type="number" id="goal" placeholder="Ex: 50">
-    </div>
-
-    <div class="card">
       <select id="filterSubject" onchange="loadDashboard()">
-        <option value="">Todas matérias</option>
+        <option value="">Todas</option>
       </select>
     </div>
 
-    <canvas id="pieChart"></canvas>
-    <canvas id="lineChart"></canvas>
+    <div class="card">
+      <canvas id="pieChart"></canvas>
+    </div>
+
+    <div class="card">
+      <canvas id="lineChart"></canvas>
+    </div>
 
   </main>
 
-  <nav class="bottom-nav">
-    <button onclick="goAdd()">➕</button>
-    <button onclick="loadDashboard()">🏠</button>
-    <button onclick="goHistory()">📅</button>
+  <!-- Bottom nav -->
+  <nav class="nav">
+
+    <button onclick="loadDashboard()">
+      <i data-lucide="home"></i>
+      <span>Home</span>
+    </button>
+
+    <button onclick="goAdd()" class="primary">
+      <i data-lucide="plus"></i>
+    </button>
+
+    <button onclick="goHistory()">
+      <i data-lucide="clock"></i>
+      <span>Histórico</span>
+    </button>
+
   </nav>
 
 </div>
@@ -57,9 +90,9 @@
 <script src="app.js"></script>
 
 <script>
+lucide.createIcons();
 initDashboard();
 
-// PWA
 if ("serviceWorker" in navigator) {
   navigator.serviceWorker.register("sw.js");
 }
