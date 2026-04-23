@@ -1,81 +1,110 @@
+:root {
+  --bg: #f6f7fb;
+  --card: #ffffff;
+  --primary: #4f46e5;
+  --text: #111827;
+  --sub: #6b7280;
+}
+
 body {
   margin: 0;
-  font-family: -apple-system, BlinkMacSystemFont, sans-serif;
-  background: #f2f2f7;
+  font-family: -apple-system, sans-serif;
+  background: var(--bg);
 }
 
 .app {
   max-width: 480px;
   margin: auto;
-  background: white;
   min-height: 100vh;
   display: flex;
   flex-direction: column;
 }
 
-.topbar {
-  padding: 15px;
-  text-align: center;
-  border-bottom: 1px solid #ddd;
-  position: relative;
+/* HEADER */
+.header {
+  padding: 16px;
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  font-weight: bold;
 }
 
-.topbar button {
-  position: absolute;
-  left: 10px;
-  top: 15px;
-  background: none;
-  border: none;
-  font-size: 18px;
-}
-
+/* MAIN */
 .main {
   flex: 1;
-  padding: 15px;
+  padding: 16px;
 }
 
+/* GRID */
+.grid {
+  display: flex;
+  gap: 10px;
+}
+
+/* CARD */
 .card {
-  background: white;
-  padding: 15px;
+  background: var(--card);
+  padding: 16px;
   border-radius: 16px;
-  margin-bottom: 10px;
-  box-shadow: 0 2px 6px rgba(0,0,0,0.05);
+  margin-bottom: 12px;
+  box-shadow: 0 4px 12px rgba(0,0,0,0.04);
 }
 
+.card-top {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  color: var(--sub);
+}
+
+/* INPUTS */
 input, select {
   width: 100%;
-  padding: 10px;
-  margin-bottom: 10px;
-  border-radius: 10px;
-  border: 1px solid #ccc;
-}
-
-.primary {
-  width: 100%;
   padding: 12px;
-  border: none;
-  background: #4a90e2;
-  color: white;
+  margin-top: 10px;
   border-radius: 12px;
-  font-size: 16px;
+  border: 1px solid #e5e7eb;
 }
 
-.bottom-nav {
+/* BOTÃO */
+.btn {
+  width: 100%;
+  margin-top: 10px;
+  padding: 14px;
+  border-radius: 12px;
+  border: none;
+  background: var(--primary);
+  color: white;
+  font-weight: bold;
+}
+
+/* NAV */
+.nav {
   display: flex;
   justify-content: space-around;
   padding: 10px;
-  border-top: 1px solid #ddd;
+  background: white;
+  border-top: 1px solid #eee;
 }
 
-.bottom-nav button {
-  font-size: 20px;
-  border: none;
+.nav button {
   background: none;
+  border: none;
+  text-align: center;
+  font-size: 12px;
 }
 
+.nav .primary {
+  background: var(--primary);
+  color: white;
+  padding: 12px;
+  border-radius: 50%;
+}
+
+/* HISTÓRICO */
 .history-card {
-  background: #f1f3f5;
-  padding: 10px;
-  border-radius: 10px;
+  background: var(--card);
+  padding: 12px;
+  border-radius: 12px;
   margin-bottom: 10px;
 }
