@@ -3,16 +3,20 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Novo Registro</title>
+  <title>Novo</title>
+
   <link rel="stylesheet" href="style.css">
+  <script src="https://unpkg.com/lucide@latest"></script>
 </head>
 
 <body>
 
 <div class="app">
 
-  <header class="topbar">
-    <button onclick="goBack()">←</button>
+  <header class="header">
+    <button onclick="goBack()">
+      <i data-lucide="arrow-left"></i>
+    </button>
     <h1>Novo Registro</h1>
   </header>
 
@@ -21,18 +25,19 @@
     <input type="date" id="date">
 
     <input type="text" id="subject" placeholder="Matéria">
-    <input type="text" id="topic" placeholder="Tema/Subtema">
+    <input type="text" id="topic" placeholder="Tema">
 
-    <input type="number" id="total" placeholder="Total de questões">
+    <input type="number" id="total" placeholder="Questões">
     <input type="number" id="correct" placeholder="Acertos">
 
-    <button class="primary" onclick="saveData()">Salvar</button>
+    <button class="btn" onclick="saveData()">Salvar</button>
 
   </main>
 
 </div>
 
 <script src="app.js"></script>
+<script>lucide.createIcons();</script>
 
 </body>
 </html>
