@@ -1,102 +1,1327 @@
 <!DOCTYPE html>
 <html lang="pt-BR">
 <head>
-  <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Study</title>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Meus Estudos</title>
+<link href="https://fonts.googleapis.com/css2?family=Lora:ital,wght@0,400;0,500;0,600;1,400&family=DM+Sans:wght@300;400;500;600&display=swap" rel="stylesheet">
+<script src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/4.4.1/chart.umd.js"></script>
+<style>
+*{box-sizing:border-box;margin:0;padding:0}
+:root{
+  --bg:#F5F3EE;
+  --surface:#FFFFFF;
+  --surface2:#EEEBe4;
+  --surface3:#E6E2D8;
+  --text:#181714;
+  --text2:#5C5A55;
+  --text3:#9A9790;
+  --teal:#0D6B52;
+  --teal-mid:#1D9E75;
+  --teal-light:#DFF2EB;
+  --coral:#C8501C;
+  --coral-light:#FAEBE5;
+  --amber:#A86C10;
+  --amber-light:#FAF0DA;
+  --blue:#1258A0;
+  --blue-light:#E3EEF9;
+  --border:#DDD9D0;
+  --border2:#C8C4BA;
+  --shadow:0 1px 4px rgba(0,0,0,.07),0 4px 16px rgba(0,0,0,.05);
+  --shadow-sm:0 1px 3px rgba(0,0,0,.06);
+  --r:12px;--r-sm:8px;--r-lg:18px;--r-xl:24px;
+}
 
-  <link rel="stylesheet" href="style.css">
-  <link rel="manifest" href="manifest.json">
+html{scroll-behavior:smooth}
+body{
+  font-family:'DM Sans',sans-serif;
+  background:var(--bg);
+  color:var(--text);
+  min-height:100vh;
+  font-size:15px;
+  line-height:1.5;
+}
 
-  <!-- Ícones -->
-  <script src="https://unpkg.com/lucide@latest"></script>
+/* LAYOUT */
+.app{max-width:800px;margin:0 auto;padding:0 16px 100px}
+
+/* TOPBAR */
+.topbar{
+  display:flex;align-items:flex-start;justify-content:space-between;
+  padding:24px 0 20px;
+  border-bottom:0.5px solid var(--border);
+  margin-bottom:20px;
+}
+.topbar-brand{display:flex;align-items:center;gap:10px}
+.topbar-icon{
+  width:40px;height:40px;border-radius:10px;
+  background:var(--teal);
+  display:flex;align-items:center;justify-content:center;
+}
+.topbar-icon svg{color:#fff}
+.topbar-title{font-family:'Lora',serif;font-size:20px;font-weight:500;color:var(--text);line-height:1.2}
+.topbar-sub{font-size:12px;color:var(--text3);margin-top:1px}
+.streak-badge{
+  display:flex;align-items:center;gap:5px;
+  padding:5px 10px;border-radius:50px;
+  background:var(--amber-light);border:0.5px solid #E8C870;
+  font-size:12px;font-weight:500;color:var(--amber);
+  white-space:nowrap;
+}
+
+/* NAV */
+.nav{
+  display:flex;gap:3px;
+  background:var(--surface2);
+  border-radius:var(--r);
+  padding:4px;
+  margin-bottom:24px;
+}
+.nav-btn{
+  flex:1;padding:9px 8px;
+  font-size:13px;font-weight:500;
+  font-family:'DM Sans',sans-serif;
+  border:none;background:transparent;
+  color:var(--text2);border-radius:var(--r-sm);
+  cursor:pointer;transition:all .18s;
+  display:flex;align-items:center;justify-content:center;gap:5px;
+}
+.nav-btn.active{
+  background:var(--surface);
+  color:var(--text);
+  box-shadow:var(--shadow-sm);
+}
+.nav-btn:hover:not(.active){background:rgba(255,255,255,.5);color:var(--text)}
+
+/* SUMMARY CARDS */
+.summary-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:10px;margin-bottom:20px}
+.stat-card{
+  background:var(--surface);border:0.5px solid var(--border);
+  border-radius:var(--r);padding:16px 14px;
+  position:relative;overflow:hidden;
+}
+.stat-card::before{
+  content:'';position:absolute;top:0;left:0;right:0;height:2px;
+  border-radius:2px 2px 0 0;
+}
+.stat-card.total::before{background:var(--blue)}
+.stat-card.hits::before{background:var(--teal-mid)}
+.stat-card.misses::before{background:var(--coral)}
+.stat-label{font-size:11px;color:var(--text3);text-transform:uppercase;letter-spacing:.06em;margin-bottom:6px}
+.stat-value{font-size:26px;font-weight:500;font-family:'Lora',serif;color:var(--text);line-height:1}
+.stat-value.green{color:var(--teal)}
+.stat-value.red{color:var(--coral)}
+.stat-sub{font-size:11px;color:var(--text3);margin-top:4px}
+.pct-bar{height:4px;border-radius:2px;background:var(--surface2);margin-top:8px;overflow:hidden}
+.pct-fill{height:100%;border-radius:2px;transition:width .5s ease}
+.pct-fill.green{background:var(--teal-mid)}
+.pct-fill.red{background:var(--coral)}
+
+/* CHART CARDS */
+.chart-row{display:grid;grid-template-columns:1fr 1fr;gap:12px;margin-bottom:20px}
+.chart-card{
+  background:var(--surface);border:0.5px solid var(--border);
+  border-radius:var(--r-lg);padding:18px;margin-bottom:16px;
+}
+.chart-card-title{
+  font-size:13px;font-weight:500;color:var(--text2);
+  margin-bottom:14px;text-transform:uppercase;letter-spacing:.04em;
+}
+.chart-wrap{position:relative;height:200px}
+.chart-wrap-sm{position:relative;height:180px}
+
+/* SECTION */
+.section-header{display:flex;align-items:center;justify-content:space-between;margin-bottom:12px}
+.section-title{font-size:14px;font-weight:500;color:var(--text);text-transform:uppercase;letter-spacing:.04em}
+.section-meta{font-size:12px;color:var(--text3)}
+
+/* SESSION ITEMS */
+.session-item{
+  background:var(--surface);border:0.5px solid var(--border);
+  border-radius:var(--r);padding:14px 16px;
+  margin-bottom:8px;
+  display:flex;align-items:center;gap:12px;
+  transition:box-shadow .15s;
+}
+.session-item:hover{box-shadow:var(--shadow-sm)}
+.session-color-dot{width:10px;height:10px;border-radius:50%;flex-shrink:0}
+.session-body{flex:1;min-width:0}
+.session-subject{font-size:14px;font-weight:500;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.session-path{font-size:12px;color:var(--text2);margin-top:2px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.session-right{display:flex;flex-direction:column;align-items:flex-end;gap:3px;flex-shrink:0}
+.session-pct{font-size:16px;font-weight:500;font-family:'Lora',serif}
+.session-pct.good{color:var(--teal)}
+.session-pct.mid{color:var(--amber)}
+.session-pct.bad{color:var(--coral)}
+.session-qs{font-size:11px;color:var(--text3)}
+.session-date-tag{
+  font-size:10px;color:var(--text3);
+  padding:2px 7px;background:var(--surface2);
+  border-radius:50px;border:0.5px solid var(--border);
+}
+.session-del{
+  background:none;border:none;cursor:pointer;
+  padding:6px;color:var(--text3);font-size:16px;
+  border-radius:6px;transition:all .15s;
+  flex-shrink:0;line-height:1;
+}
+.session-del:hover{color:var(--coral);background:var(--coral-light)}
+
+/* EMPTY STATE */
+.empty{
+  text-align:center;padding:48px 20px;color:var(--text2);
+  background:var(--surface);border:0.5px dashed var(--border2);
+  border-radius:var(--r-lg);margin-top:4px;
+}
+.empty-icon{font-size:40px;margin-bottom:10px}
+.empty-txt{font-size:14px;line-height:1.6}
+.empty-cta{
+  display:inline-block;margin-top:14px;
+  padding:9px 18px;background:var(--teal);color:#fff;
+  border:none;border-radius:var(--r-sm);font-size:13px;
+  font-weight:500;cursor:pointer;font-family:'DM Sans',sans-serif;
+}
+
+/* FAB */
+.fab{
+  position:fixed;bottom:24px;
+  left:50%;transform:translateX(-50%);
+  background:var(--teal);color:#fff;
+  border:none;border-radius:50px;
+  padding:14px 26px;font-size:15px;font-weight:500;
+  font-family:'DM Sans',sans-serif;cursor:pointer;
+  box-shadow:0 4px 24px rgba(13,107,82,.4);
+  display:flex;align-items:center;gap:8px;
+  z-index:50;white-space:nowrap;
+  transition:transform .15s,box-shadow .15s,background .15s;
+}
+.fab:hover{transform:translateX(-50%) translateY(-2px);box-shadow:0 8px 28px rgba(13,107,82,.45);background:var(--teal-mid)}
+.fab:active{transform:translateX(-50%) translateY(0)}
+
+/* MODAL */
+.overlay{
+  position:fixed;inset:0;
+  background:rgba(24,23,20,.55);
+  backdrop-filter:blur(3px);
+  z-index:200;
+  display:flex;align-items:flex-end;justify-content:center;
+  animation:fadeIn .2s ease;
+}
+@keyframes fadeIn{from{opacity:0}to{opacity:1}}
+.modal{
+  background:var(--surface);
+  border-radius:var(--r-xl) var(--r-xl) 0 0;
+  padding:28px 20px 36px;
+  width:100%;max-width:800px;
+  max-height:92vh;overflow-y:auto;
+  animation:slideUp .25s ease;
+}
+@keyframes slideUp{from{transform:translateY(60px);opacity:.5}to{transform:translateY(0);opacity:1}}
+.modal-handle{
+  width:36px;height:4px;
+  background:var(--border2);
+  border-radius:2px;
+  margin:0 auto 20px;
+}
+.modal-header{display:flex;align-items:center;justify-content:space-between;margin-bottom:20px}
+.modal-title{font-family:'Lora',serif;font-size:19px;font-weight:500}
+.modal-close{
+  background:var(--surface2);border:none;
+  border-radius:50%;width:34px;height:34px;
+  cursor:pointer;font-size:20px;
+  color:var(--text2);display:flex;
+  align-items:center;justify-content:center;
+  transition:background .15s;
+}
+.modal-close:hover{background:var(--surface3)}
+
+/* STEPS */
+.steps{display:flex;gap:6px;margin-bottom:22px}
+.step-dot{
+  flex:1;height:3px;border-radius:2px;
+  background:var(--border);transition:background .3s;
+}
+.step-dot.done{background:var(--teal)}
+.step-dot.active{background:var(--teal-mid)}
+
+/* FORM */
+.form-group{margin-bottom:16px}
+.form-label{
+  font-size:12px;font-weight:500;
+  color:var(--text2);margin-bottom:6px;
+  display:flex;align-items:center;justify-content:space-between;
+  text-transform:uppercase;letter-spacing:.04em;
+}
+.form-label span{font-size:11px;color:var(--text3);font-weight:400;text-transform:none;letter-spacing:0}
+.form-input{
+  width:100%;padding:10px 12px;
+  border:0.5px solid var(--border2);
+  border-radius:var(--r-sm);
+  font-size:14px;font-family:'DM Sans',sans-serif;
+  color:var(--text);background:var(--surface);
+  transition:border-color .15s,box-shadow .15s;
+  appearance:none;
+}
+.form-input:focus{
+  outline:none;
+  border-color:var(--teal);
+  box-shadow:0 0 0 3px rgba(29,158,117,.12);
+}
+.form-input::placeholder{color:var(--text3)}
+.form-row{display:grid;grid-template-columns:1fr 1fr;gap:12px}
+
+/* PILLS */
+.pill-group{display:flex;flex-wrap:wrap;gap:6px;margin-top:8px}
+.pill{
+  padding:5px 12px;border-radius:50px;font-size:12px;
+  cursor:pointer;border:0.5px solid var(--border);
+  background:var(--surface2);color:var(--text2);
+  transition:all .15s;user-select:none;
+}
+.pill:hover{border-color:var(--teal-mid);background:var(--teal-light);color:var(--teal)}
+.pill.active{background:var(--teal-light);border-color:var(--teal-mid);color:var(--teal);font-weight:500}
+
+/* RATIO PREVIEW */
+.ratio-preview{
+  background:var(--surface2);border-radius:var(--r-sm);
+  padding:12px 14px;margin:4px 0 16px;
+}
+.ratio-row{display:flex;justify-content:space-between;font-size:13px;margin-bottom:8px}
+.ratio-good{color:var(--teal);font-weight:500}
+.ratio-bad{color:var(--coral);font-weight:500}
+.ratio-bar{height:6px;border-radius:3px;background:var(--coral-light);overflow:hidden}
+.ratio-bar-fill{height:100%;border-radius:3px;background:var(--teal-mid);transition:width .4s ease}
+
+/* BUTTONS */
+.btn-primary{
+  width:100%;padding:12px;
+  background:var(--teal);color:#fff;
+  border:none;border-radius:var(--r-sm);
+  font-size:14px;font-weight:500;
+  font-family:'DM Sans',sans-serif;cursor:pointer;
+  transition:background .15s;
+}
+.btn-primary:hover{background:var(--teal-mid)}
+.btn-secondary{
+  width:100%;padding:11px;
+  background:transparent;color:var(--text2);
+  border:0.5px solid var(--border2);
+  border-radius:var(--r-sm);font-size:14px;
+  font-weight:400;font-family:'DM Sans',sans-serif;cursor:pointer;
+  margin-top:8px;transition:all .15s;
+}
+.btn-secondary:hover{background:var(--surface2);color:var(--text)}
+.btn-danger{
+  background:none;border:none;cursor:pointer;
+  color:var(--text3);font-size:13px;
+  padding:6px 10px;border-radius:var(--r-sm);
+  font-family:'DM Sans',sans-serif;transition:all .15s;
+  display:flex;align-items:center;gap:4px;
+}
+.btn-danger:hover{color:var(--coral);background:var(--coral-light)}
+
+/* BADGE */
+.badge{
+  display:inline-flex;align-items:center;
+  padding:2px 8px;border-radius:50px;
+  font-size:11px;font-weight:500;
+}
+.badge-green{background:var(--teal-light);color:var(--teal)}
+.badge-red{background:var(--coral-light);color:var(--coral)}
+.badge-amber{background:var(--amber-light);color:var(--amber)}
+.badge-blue{background:var(--blue-light);color:var(--blue)}
+.badge-gray{background:var(--surface2);color:var(--text2)}
+
+/* SUBJECT MANAGER */
+.subject-card{
+  background:var(--surface);border:0.5px solid var(--border);
+  border-radius:var(--r);margin-bottom:8px;overflow:hidden;
+}
+.subject-card-header{
+  display:flex;align-items:center;gap:10px;
+  padding:12px 14px;cursor:pointer;
+  transition:background .15s;
+}
+.subject-card-header:hover{background:var(--surface2)}
+.subject-color-bar{width:3px;height:32px;border-radius:2px;flex-shrink:0}
+.subject-info{flex:1;min-width:0}
+.subject-name{font-size:14px;font-weight:500}
+.subject-meta{font-size:11px;color:var(--text3);margin-top:2px}
+.subject-actions{display:flex;gap:4px;align-items:center}
+.subject-body{
+  border-top:0.5px solid var(--border);
+  padding:12px 14px;
+  display:none;
+}
+.subject-body.open{display:block}
+.subcat-row{
+  display:flex;align-items:center;gap:8px;
+  padding:7px 0;border-bottom:0.5px solid var(--border);
+}
+.subcat-row:last-child{border-bottom:none}
+.subcat-name{flex:1;font-size:13px;color:var(--text2)}
+.subcat-subsubs{display:flex;flex-wrap:wrap;gap:4px;margin-top:3px}
+.subcat-subsub{
+  font-size:10px;padding:1px 6px;
+  background:var(--surface2);border-radius:50px;
+  color:var(--text3);
+}
+.add-subcat-row{margin-top:10px;display:flex;gap:8px}
+.add-subcat-input{
+  flex:1;padding:7px 10px;
+  border:0.5px solid var(--border2);
+  border-radius:var(--r-sm);font-size:13px;
+  font-family:'DM Sans',sans-serif;color:var(--text);
+}
+.add-subcat-input:focus{outline:none;border-color:var(--teal)}
+.add-subcat-btn{
+  padding:7px 14px;background:var(--teal);
+  color:#fff;border:none;border-radius:var(--r-sm);
+  font-size:12px;font-weight:500;
+  font-family:'DM Sans',sans-serif;cursor:pointer;
+  white-space:nowrap;
+}
+.add-subcat-btn:hover{background:var(--teal-mid)}
+
+/* PERF TABLE */
+.perf-table{width:100%;border-collapse:collapse;font-size:13px}
+.perf-table th{
+  text-align:left;padding:8px 0;
+  color:var(--text3);font-weight:500;
+  font-size:11px;text-transform:uppercase;letter-spacing:.05em;
+  border-bottom:0.5px solid var(--border);
+}
+.perf-table td{padding:11px 0;border-bottom:0.5px solid var(--border)}
+.perf-table tbody tr:last-child td{border-bottom:none}
+.perf-table tbody tr:hover td{background:var(--surface2)}
+.subject-dot-sm{
+  display:inline-block;width:8px;height:8px;
+  border-radius:50%;margin-right:6px;vertical-align:middle;
+}
+
+/* CALENDAR STRIP */
+.cal-strip{
+  display:flex;gap:6px;overflow-x:auto;
+  padding-bottom:4px;margin-bottom:16px;
+  scrollbar-width:none;
+}
+.cal-strip::-webkit-scrollbar{display:none}
+.cal-day{
+  display:flex;flex-direction:column;align-items:center;
+  min-width:44px;padding:8px 4px;
+  border-radius:var(--r-sm);border:0.5px solid transparent;
+  cursor:pointer;transition:all .15s;flex-shrink:0;
+}
+.cal-day.has-session{border-color:var(--teal-light);background:var(--teal-light)}
+.cal-day.today{border-color:var(--teal-mid);background:var(--teal-light)}
+.cal-day.selected{background:var(--teal);border-color:var(--teal)}
+.cal-day-name{font-size:10px;color:var(--text3);text-transform:uppercase;letter-spacing:.04em}
+.cal-day.selected .cal-day-name,.cal-day.selected .cal-day-num{color:#fff}
+.cal-day-num{font-size:15px;font-weight:500;margin-top:2px}
+.cal-day-dot{width:5px;height:5px;border-radius:50%;background:var(--teal-mid);margin-top:4px}
+.cal-day.selected .cal-day-dot{background:#fff}
+.cal-day.has-session:not(.selected) .cal-day-num{color:var(--teal)}
+
+/* DIVIDER */
+.divider{height:0.5px;background:var(--border);margin:16px 0}
+
+/* TOAST */
+.toast{
+  position:fixed;bottom:90px;left:50%;transform:translateX(-50%) translateY(20px);
+  background:var(--text);color:#fff;
+  padding:10px 18px;border-radius:50px;
+  font-size:13px;z-index:500;
+  opacity:0;transition:all .25s;white-space:nowrap;
+  pointer-events:none;
+}
+.toast.show{opacity:1;transform:translateX(-50%) translateY(0)}
+
+/* CONFIRM DIALOG */
+.confirm-overlay{
+  position:fixed;inset:0;
+  background:rgba(24,23,20,.5);
+  z-index:300;
+  display:flex;align-items:center;justify-content:center;
+  padding:20px;
+}
+.confirm-box{
+  background:var(--surface);
+  border-radius:var(--r-lg);
+  padding:24px 20px;
+  max-width:320px;width:100%;
+  box-shadow:0 8px 32px rgba(0,0,0,.15);
+}
+.confirm-title{font-family:'Lora',serif;font-size:17px;margin-bottom:8px}
+.confirm-msg{font-size:14px;color:var(--text2);margin-bottom:20px;line-height:1.5}
+.confirm-actions{display:flex;gap:8px}
+.confirm-cancel{
+  flex:1;padding:10px;background:var(--surface2);
+  border:0.5px solid var(--border2);border-radius:var(--r-sm);
+  font-size:14px;font-family:'DM Sans',sans-serif;cursor:pointer;
+  color:var(--text2);
+}
+.confirm-ok{
+  flex:1;padding:10px;background:var(--coral);
+  border:none;border-radius:var(--r-sm);
+  font-size:14px;font-weight:500;
+  font-family:'DM Sans',sans-serif;cursor:pointer;
+  color:#fff;
+}
+
+@media(max-width:520px){
+  .summary-grid{grid-template-columns:repeat(3,1fr)}
+  .chart-row{grid-template-columns:1fr}
+  .form-row{grid-template-columns:1fr}
+  .stat-value{font-size:22px}
+}
+</style>
 </head>
-
 <body>
 
 <div class="app">
-
-  <!-- Header -->
-  <header class="header">
-    <h1>Study</h1>
-  </header>
-
-  <!-- Conteúdo -->
-  <main class="main">
-
-    <div class="grid">
-
-      <div class="card">
-        <div class="card-top">
-          <i data-lucide="book-open"></i>
-          <span>Total</span>
-        </div>
-        <h2 id="total">0</h2>
+  <!-- TOPBAR -->
+  <div class="topbar">
+    <div class="topbar-brand">
+      <div class="topbar-icon">
+        <svg width="20" height="20" viewBox="0 0 20 20" fill="none">
+          <rect x="2" y="3" width="6" height="8" rx="1.5" fill="white" opacity=".9"/>
+          <rect x="2" y="13" width="6" height="4" rx="1.5" fill="white" opacity=".5"/>
+          <rect x="10" y="3" width="8" height="4" rx="1.5" fill="white" opacity=".5"/>
+          <rect x="10" y="9" width="8" height="8" rx="1.5" fill="white" opacity=".9"/>
+        </svg>
       </div>
-
-      <div class="card">
-        <div class="card-top">
-          <i data-lucide="target"></i>
-          <span>Aproveitamento</span>
-        </div>
-        <h2 id="accuracy">0%</h2>
+      <div>
+        <div class="topbar-title">Meus Estudos</div>
+        <div class="topbar-sub" id="topDate"></div>
       </div>
-
     </div>
-
-    <div class="card">
-      <div class="card-top">
-        <i data-lucide="filter"></i>
-        <span>Filtrar matéria</span>
-      </div>
-
-      <select id="filterSubject" onchange="loadDashboard()">
-        <option value="">Todas</option>
-      </select>
+    <div class="streak-badge" id="streakBadge" style="display:none">
+      <svg width="13" height="13" viewBox="0 0 13 13" fill="none"><path d="M6.5 1C6.5 1 9 3.5 9 6.5C9 7.88 8.17 9.08 7 9.6C7.2 9 7 8 6.5 7.5C6 8.5 5 9 4 9.5C4 8 4.5 7 5 6C4 6.5 3 7 2.5 8C2 7 2 6 2.5 5C3 4 4 3 6.5 1Z" fill="#A86C10"/></svg>
+      <span id="streakText"></span>
     </div>
+  </div>
 
-    <div class="card">
-      <canvas id="pieChart"></canvas>
-    </div>
-
-    <div class="card">
-      <canvas id="lineChart"></canvas>
-    </div>
-
-  </main>
-
-  <!-- Bottom nav -->
+  <!-- NAV TABS -->
   <nav class="nav">
-
-    <button onclick="loadDashboard()">
-      <i data-lucide="home"></i>
-      <span>Home</span>
+    <button class="nav-btn active" onclick="switchTab('home')" id="btn-home">
+      <svg width="14" height="14" viewBox="0 0 14 14" fill="none"><rect x="1" y="1" width="5" height="5" rx="1.5" fill="currentColor" opacity=".8"/><rect x="8" y="1" width="5" height="5" rx="1.5" fill="currentColor" opacity=".4"/><rect x="1" y="8" width="5" height="5" rx="1.5" fill="currentColor" opacity=".4"/><rect x="8" y="8" width="5" height="5" rx="1.5" fill="currentColor" opacity=".8"/></svg>
+      Início
     </button>
-
-    <button onclick="goAdd()" class="primary">
-      <i data-lucide="plus"></i>
+    <button class="nav-btn" onclick="switchTab('stats')" id="btn-stats">
+      <svg width="14" height="14" viewBox="0 0 14 14" fill="none"><rect x="1" y="8" width="3" height="5" rx="1" fill="currentColor" opacity=".6"/><rect x="5.5" y="5" width="3" height="8" rx="1" fill="currentColor"/><rect x="10" y="2" width="3" height="11" rx="1" fill="currentColor" opacity=".6"/></svg>
+      Estatísticas
     </button>
-
-    <button onclick="goHistory()">
-      <i data-lucide="clock"></i>
-      <span>Histórico</span>
+    <button class="nav-btn" onclick="switchTab('subjects')" id="btn-subjects">
+      <svg width="14" height="14" viewBox="0 0 14 14" fill="none"><path d="M1 3.5C1 2.67 1.67 2 2.5 2h9C12.33 2 13 2.67 13 3.5v7c0 .83-.67 1.5-1.5 1.5h-9C1.67 12 1 11.33 1 10.5v-7Z" stroke="currentColor" stroke-width="1.2" fill="none"/><path d="M4.5 5.5h5M4.5 8h3" stroke="currentColor" stroke-width="1.2" stroke-linecap="round"/></svg>
+      Matérias
     </button>
-
   </nav>
 
+  <!-- TAB: HOME -->
+  <div id="tab-home">
+    <!-- Summary cards -->
+    <div class="summary-grid">
+      <div class="stat-card total">
+        <div class="stat-label">Questões</div>
+        <div class="stat-value" id="totalQ">0</div>
+        <div class="stat-sub" id="totalSessions">0 sessões</div>
+      </div>
+      <div class="stat-card hits">
+        <div class="stat-label">Acertos</div>
+        <div class="stat-value green" id="pctAcertos">—</div>
+        <div class="pct-bar"><div class="pct-fill green" id="barAcertos" style="width:0%"></div></div>
+      </div>
+      <div class="stat-card misses">
+        <div class="stat-label">Erros</div>
+        <div class="stat-value red" id="pctErros">—</div>
+        <div class="pct-bar"><div class="pct-fill red" id="barErros" style="width:0%"></div></div>
+      </div>
+    </div>
+
+    <!-- Charts -->
+    <div class="chart-row">
+      <div class="chart-card" style="margin-bottom:0">
+        <div class="chart-card-title">Desempenho total</div>
+        <div class="chart-wrap" id="pieWrap">
+          <canvas id="pieChart" role="img" aria-label="Pizza de acertos e erros totais"></canvas>
+        </div>
+        <div id="pieLegend" style="display:flex;justify-content:center;gap:20px;margin-top:12px;font-size:12px"></div>
+      </div>
+      <div class="chart-card" style="margin-bottom:0">
+        <div class="chart-card-title">Últimas sessões</div>
+        <div class="chart-wrap-sm">
+          <canvas id="lineChart" role="img" aria-label="Linha de aproveitamento nas últimas sessões"></canvas>
+        </div>
+      </div>
+    </div>
+
+    <!-- Calendar strip -->
+    <div style="margin:20px 0 4px">
+      <div class="section-header">
+        <div class="section-title">Calendário</div>
+        <div class="section-meta" id="calMonth"></div>
+      </div>
+      <div class="cal-strip" id="calStrip"></div>
+    </div>
+
+    <!-- Session list -->
+    <div class="section-header" style="margin-top:16px">
+      <div class="section-title">Histórico</div>
+      <div class="section-meta" id="sessionCountLabel"></div>
+    </div>
+    <div id="sessionList"></div>
+  </div>
+
+  <!-- TAB: STATS -->
+  <div id="tab-stats" style="display:none">
+    <!-- Evolution chart -->
+    <div class="chart-card">
+      <div class="chart-card-title">Evolução de acertos (%)</div>
+      <div style="position:relative;height:240px">
+        <canvas id="evoChart" role="img" aria-label="Gráfico de evolução do aproveitamento por dia"></canvas>
+      </div>
+    </div>
+
+    <!-- Per-subject chart -->
+    <div class="chart-card">
+      <div class="chart-card-title">Acertos por matéria (%)</div>
+      <div id="subjectBarWrap" style="position:relative"></div>
+    </div>
+
+    <!-- Table -->
+    <div class="chart-card">
+      <div class="chart-card-title">Tabela de desempenho</div>
+      <div id="perfTable"></div>
+    </div>
+  </div>
+
+  <!-- TAB: SUBJECTS -->
+  <div id="tab-subjects" style="display:none">
+    <div style="display:flex;justify-content:flex-end;margin-bottom:12px">
+      <button class="btn-primary" style="width:auto;padding:9px 16px" onclick="openNewSubjectModal()">+ Nova matéria</button>
+    </div>
+    <div id="subjectManager"></div>
+  </div>
 </div>
 
-<script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
-<script src="app.js"></script>
+<!-- FAB -->
+<button class="fab" onclick="openSessionModal()">
+  <svg width="16" height="16" viewBox="0 0 16 16" fill="none"><path d="M8 2v12M2 8h12" stroke="#fff" stroke-width="2" stroke-linecap="round"/></svg>
+  Registrar sessão
+</button>
+
+<!-- MODAL: NOVA SESSÃO -->
+<div class="overlay" id="sessionOverlay" style="display:none">
+<div class="modal" id="sessionModal">
+  <div class="modal-handle"></div>
+  <div class="modal-header">
+    <div class="modal-title" id="modalTitle">Nova sessão</div>
+    <button class="modal-close" onclick="closeSessionModal()">×</button>
+  </div>
+  <div class="steps">
+    <div class="step-dot done" id="sd1"></div>
+    <div class="step-dot" id="sd2"></div>
+    <div class="step-dot" id="sd3"></div>
+  </div>
+
+  <!-- STEP 1: Matéria + data -->
+  <div id="mstep1">
+    <div class="form-group">
+      <label class="form-label">Data da sessão</label>
+      <input type="date" class="form-input" id="sessionDate">
+    </div>
+    <div class="form-group">
+      <label class="form-label">Matéria</label>
+      <input type="text" class="form-input" id="subjectIn" placeholder="Digite ou selecione abaixo" autocomplete="off" oninput="onSubjectInput(this.value)">
+      <div class="pill-group" id="subjectPills"></div>
+    </div>
+    <div class="form-group" id="subcatGroupEl" style="display:none">
+      <label class="form-label">Subcategoria</label>
+      <input type="text" class="form-input" id="subcatIn" placeholder="Ex: Imunizações" autocomplete="off" oninput="onSubcatInput(this.value)">
+      <div class="pill-group" id="subcatPills"></div>
+    </div>
+    <div class="form-group" id="subsubGroupEl" style="display:none">
+      <label class="form-label">Sub-subcategoria <span>(opcional)</span></label>
+      <input type="text" class="form-input" id="subsubIn" placeholder="Ex: Imunização Infantil" autocomplete="off" oninput="onSubsubInput(this.value)">
+      <div class="pill-group" id="subsubPills"></div>
+    </div>
+    <button class="btn-primary" onclick="step1Next()">Próximo →</button>
+  </div>
+
+  <!-- STEP 2: Questões -->
+  <div id="mstep2" style="display:none">
+    <div style="margin-bottom:16px;padding:12px 14px;background:var(--surface2);border-radius:var(--r-sm)">
+      <div style="font-size:12px;color:var(--text3);margin-bottom:2px">Sessão</div>
+      <div style="font-size:14px;font-weight:500" id="step2Summary"></div>
+    </div>
+    <div class="form-group">
+      <label class="form-label">Total de questões respondidas</label>
+      <input type="number" class="form-input" id="totalQIn" placeholder="Ex: 10" min="1" oninput="updateRatio()">
+    </div>
+    <div class="form-row">
+      <div class="form-group">
+        <label class="form-label">Acertos</label>
+        <input type="number" class="form-input" id="acertosIn" placeholder="Ex: 8" min="0" oninput="updateRatioAuto()">
+      </div>
+      <div class="form-group">
+        <label class="form-label">Erros</label>
+        <input type="number" class="form-input" id="errosIn" placeholder="Ex: 2" min="0" oninput="updateRatioFromErros()">
+      </div>
+    </div>
+    <div class="ratio-preview" id="ratioPreview" style="display:none">
+      <div class="ratio-row">
+        <span class="ratio-good">✓ Acertos: <strong id="rpAcertos">—</strong></span>
+        <span class="ratio-bad">✗ Erros: <strong id="rpErros">—</strong></span>
+      </div>
+      <div class="ratio-bar"><div class="ratio-bar-fill" id="rpBar" style="width:0%"></div></div>
+    </div>
+    <button class="btn-primary" onclick="saveSession()">Salvar sessão</button>
+    <button class="btn-secondary" onclick="goToStep1()">← Voltar</button>
+  </div>
+</div>
+</div>
+
+<!-- MODAL: NOVA MATÉRIA -->
+<div class="overlay" id="newSubjectOverlay" style="display:none">
+<div class="modal">
+  <div class="modal-handle"></div>
+  <div class="modal-header">
+    <div class="modal-title">Nova matéria</div>
+    <button class="modal-close" onclick="closeNewSubjectModal()">×</button>
+  </div>
+  <div class="form-group">
+    <label class="form-label">Nome da matéria</label>
+    <input type="text" class="form-input" id="newSubjectIn" placeholder="Ex: Pediatria" onkeydown="if(event.key==='Enter')saveNewSubject()">
+  </div>
+  <button class="btn-primary" onclick="saveNewSubject()">Adicionar matéria</button>
+</div>
+</div>
+
+<!-- CONFIRM DIALOG -->
+<div class="confirm-overlay" id="confirmOverlay" style="display:none">
+  <div class="confirm-box">
+    <div class="confirm-title" id="confirmTitle"></div>
+    <div class="confirm-msg" id="confirmMsg"></div>
+    <div class="confirm-actions">
+      <button class="confirm-cancel" onclick="closeConfirm()">Cancelar</button>
+      <button class="confirm-ok" id="confirmOkBtn">Confirmar</button>
+    </div>
+  </div>
+</div>
+
+<!-- TOAST -->
+<div class="toast" id="toast"></div>
 
 <script>
-lucide.createIcons();
-initDashboard();
+// ==================== DATA ====================
+const STORE_KEY = 'studyAppV2';
+const COLORS = ['#0F6E56','#185FA5','#C8501C','#A86C10','#993556','#4A8C1C','#6435B7','#0E7090'];
 
-if ("serviceWorker" in navigator) {
-  navigator.serviceWorker.register("sw.js");
+function loadData() {
+  try { return JSON.parse(localStorage.getItem(STORE_KEY) || 'null') || {sessions:[],subjects:{}}; }
+  catch(e) { return {sessions:[],subjects:{}}; }
 }
-</script>
+function saveData() { localStorage.setItem(STORE_KEY, JSON.stringify(D)); }
 
+let D = loadData();
+
+// ==================== UTILITIES ====================
+const $id = id => document.getElementById(id);
+const today = () => new Date().toISOString().slice(0,10);
+const fmtDate = d => {
+  const dt = new Date(d+'T12:00:00');
+  return dt.toLocaleDateString('pt-BR',{day:'2-digit',month:'short'});
+};
+const fmtDateLong = d => {
+  const dt = new Date(d+'T12:00:00');
+  return dt.toLocaleDateString('pt-BR',{weekday:'short',day:'2-digit',month:'short'});
+};
+const subjectColor = name => {
+  const keys = Object.keys(D.subjects);
+  const idx = keys.indexOf(name);
+  return COLORS[(idx < 0 ? Math.abs(hashStr(name)) : idx) % COLORS.length];
+};
+const hashStr = s => s.split('').reduce((a,c)=>((a<<5)-a)+c.charCodeAt(0),0);
+
+function showToast(msg) {
+  const t = $id('toast');
+  t.textContent = msg; t.classList.add('show');
+  setTimeout(() => t.classList.remove('show'), 2400);
+}
+
+let confirmCb = null;
+function showConfirm(title, msg, cb) {
+  $id('confirmTitle').textContent = title;
+  $id('confirmMsg').textContent = msg;
+  confirmCb = cb;
+  $id('confirmOverlay').style.display = 'flex';
+  $id('confirmOkBtn').onclick = () => { closeConfirm(); cb(); };
+}
+function closeConfirm() { $id('confirmOverlay').style.display = 'none'; }
+
+// ==================== CHARTS ====================
+let charts = {};
+function destroyChart(key) { if(charts[key]) { charts[key].destroy(); charts[key] = null; } }
+
+// ==================== OVERALL STATS ====================
+function getOverall() {
+  let q=0,a=0;
+  D.sessions.forEach(s => { q+=s.total; a+=s.acertos; });
+  const pct = q ? Math.round(a/q*100) : null;
+  return { q, a, e:q-a, pct };
+}
+function getStreak() {
+  const days = [...new Set(D.sessions.map(s=>s.date))].sort().reverse();
+  let streak=0, cur=today();
+  for(const d of days) {
+    if(d===cur) { streak++; const dt=new Date(cur); dt.setDate(dt.getDate()-1); cur=dt.toISOString().slice(0,10); }
+    else if(d<cur) break;
+  }
+  return streak;
+}
+
+// ==================== HOME TAB ====================
+function renderHome() {
+  const { q, a, e, pct } = getOverall();
+  $id('totalQ').textContent = q;
+  $id('totalSessions').textContent = D.sessions.length + ' sessõe' + (D.sessions.length===1?'':'s');
+  $id('pctAcertos').textContent = pct !== null ? pct+'%' : '—';
+  $id('pctErros').textContent = pct !== null ? (100-pct)+'%' : '—';
+  $id('barAcertos').style.width = (pct||0)+'%';
+  $id('barErros').style.width = (pct !== null ? 100-pct : 0)+'%';
+
+  const streak = getStreak();
+  if(streak > 0) {
+    $id('streakBadge').style.display = 'flex';
+    $id('streakText').textContent = streak + (streak===1?' dia':' dias') + ' seguido' + (streak===1?'':'s');
+  } else $id('streakBadge').style.display = 'none';
+
+  renderPieChart(a, e);
+  renderLineChart();
+  renderCalendar();
+  renderSessionList();
+}
+
+function renderPieChart(a, e) {
+  destroyChart('pie');
+  const ctx = $id('pieChart').getContext('2d');
+  const el = $id('pieLegend');
+  if(!a && !e) { ctx.clearRect(0,0,300,300); el.innerHTML=''; return; }
+  charts.pie = new Chart(ctx, {
+    type:'doughnut',
+    data:{
+      labels:['Acertos','Erros'],
+      datasets:[{
+        data:[a,e],
+        backgroundColor:['#1D9E75','#C8501C'],
+        borderWidth:2,borderColor:'#FFFFFF',
+        hoverOffset:6
+      }]
+    },
+    options:{
+      responsive:true,maintainAspectRatio:false,
+      cutout:'68%',
+      plugins:{
+        legend:{display:false},
+        tooltip:{callbacks:{label:d=>' '+Math.round(d.parsed/(a+e)*100)+'%  ('+d.parsed+' questões)'}}
+      }
+    }
+  });
+  el.innerHTML = `
+    <span style="display:flex;align-items:center;gap:5px"><span style="width:10px;height:10px;border-radius:2px;background:#1D9E75"></span><span style="color:var(--text2)">Acertos ${Math.round(a/(a+e)*100)}%</span></span>
+    <span style="display:flex;align-items:center;gap:5px"><span style="width:10px;height:10px;border-radius:2px;background:#C8501C"></span><span style="color:var(--text2)">Erros ${Math.round(e/(a+e)*100)}%</span></span>
+  `;
+}
+
+function renderLineChart() {
+  destroyChart('line');
+  const ctx = $id('lineChart').getContext('2d');
+  const last10 = D.sessions.slice(-10);
+  if(!last10.length) { ctx.clearRect(0,0,300,200); return; }
+  const labels = last10.map(s => fmtDate(s.date));
+  const vals = last10.map(s => Math.round(s.acertos/s.total*100));
+  charts.line = new Chart(ctx, {
+    type:'line',
+    data:{
+      labels,
+      datasets:[{
+        data:vals,
+        borderColor:'#1D9E75',
+        backgroundColor:'rgba(29,158,117,.1)',
+        tension:.35,fill:true,
+        pointBackgroundColor:vals.map(v=>v>=60?'#1D9E75':'#C8501C'),
+        pointRadius:5,pointBorderWidth:0
+      }]
+    },
+    options:{
+      responsive:true,maintainAspectRatio:false,
+      plugins:{legend:{display:false},tooltip:{callbacks:{label:d=>d.raw+'%'}}},
+      scales:{
+        y:{min:0,max:100,ticks:{callback:v=>v+'%',font:{size:11}},grid:{color:'rgba(0,0,0,.04)'}},
+        x:{ticks:{font:{size:10}},grid:{display:false}}
+      }
+    }
+  });
+}
+
+function renderCalendar() {
+  const strip = $id('calStrip');
+  const now = new Date();
+  const sessionDates = new Set(D.sessions.map(s=>s.date));
+  const days = ['Dom','Seg','Ter','Qua','Qui','Sex','Sáb'];
+  let html = '';
+  for(let i=13; i>=0; i--) {
+    const dt = new Date(now); dt.setDate(dt.getDate()-i);
+    const iso = dt.toISOString().slice(0,10);
+    const isToday = iso === today();
+    const has = sessionDates.has(iso);
+    const cls = isToday ? 'cal-day today' : has ? 'cal-day has-session' : 'cal-day';
+    html += `<div class="${cls}" title="${iso}">
+      <span class="cal-day-name">${days[dt.getDay()]}</span>
+      <span class="cal-day-num">${dt.getDate()}</span>
+      ${has ? '<span class="cal-day-dot"></span>' : ''}
+    </div>`;
+  }
+  strip.innerHTML = html;
+  $id('calMonth').textContent = now.toLocaleDateString('pt-BR',{month:'long',year:'numeric'});
+}
+
+function renderSessionList() {
+  const el = $id('sessionList');
+  $id('sessionCountLabel').textContent = D.sessions.length + ' registro' + (D.sessions.length===1?'':'s');
+  const sorted = [...D.sessions].reverse();
+  if(!sorted.length) {
+    el.innerHTML = `<div class="empty">
+      <div class="empty-icon">📚</div>
+      <div class="empty-txt">Nenhuma sessão registrada ainda.<br>Clique em <strong>Registrar sessão</strong> para começar!</div>
+    </div>`;
+    return;
+  }
+  el.innerHTML = sorted.slice(0,30).map((s,i) => {
+    const realIdx = D.sessions.length-1-i;
+    const pct = Math.round(s.acertos/s.total*100);
+    const pctClass = pct>=70?'good':pct>=50?'mid':'bad';
+    const color = subjectColor(s.subject);
+    const path = [s.subcat,s.subsubcat].filter(Boolean).join(' › ');
+    return `<div class="session-item">
+      <div class="session-color-dot" style="background:${color}"></div>
+      <div class="session-body">
+        <div class="session-subject">${s.subject}</div>
+        ${path?`<div class="session-path">${path}</div>`:''}
+      </div>
+      <div class="session-right">
+        <span class="session-date-tag">${fmtDate(s.date)}</span>
+        <span class="session-pct ${pctClass}">${pct}%</span>
+        <span class="session-qs">${s.acertos}/${s.total}</span>
+      </div>
+      <button class="session-del" onclick="deleteSession(${realIdx})" title="Remover sessão">×</button>
+    </div>`;
+  }).join('');
+}
+
+function deleteSession(idx) {
+  showConfirm('Remover sessão?','Esta ação não pode ser desfeita.',()=>{
+    D.sessions.splice(idx,1);
+    saveData();
+    renderHome();
+    showToast('Sessão removida');
+  });
+}
+
+// ==================== STATS TAB ====================
+function renderStatsTab() {
+  renderEvoChart();
+  renderSubjectBar();
+  renderPerfTable();
+}
+
+function renderEvoChart() {
+  destroyChart('evo');
+  const ctx = $id('evoChart').getContext('2d');
+  // group by day
+  const byDay = {};
+  D.sessions.forEach(s => {
+    if(!byDay[s.date]) byDay[s.date]={q:0,a:0};
+    byDay[s.date].q+=s.total; byDay[s.date].a+=s.acertos;
+  });
+  const days = Object.keys(byDay).sort();
+  if(!days.length) { ctx.clearRect(0,0,400,240); return; }
+  const vals = days.map(d => Math.round(byDay[d].a/byDay[d].q*100));
+  charts.evo = new Chart(ctx, {
+    type:'line',
+    data:{
+      labels: days.map(fmtDate),
+      datasets:[{
+        label:'Acertos %',
+        data:vals,
+        borderColor:'#1D9E75',
+        backgroundColor:'rgba(29,158,117,.07)',
+        tension:.4,fill:true,
+        pointBackgroundColor:vals.map(v=>v>=60?'#1D9E75':'#C8501C'),
+        pointRadius:6,pointBorderWidth:2,pointBorderColor:'#fff',
+      }]
+    },
+    options:{
+      responsive:true,maintainAspectRatio:false,
+      plugins:{legend:{display:false},tooltip:{callbacks:{label:d=>d.raw+'%'}}},
+      scales:{
+        y:{min:0,max:100,ticks:{callback:v=>v+'%'},grid:{color:'rgba(0,0,0,.04)'}},
+        x:{ticks:{font:{size:11}},grid:{display:false}}
+      }
+    }
+  });
+}
+
+function renderSubjectBar() {
+  const wrap = $id('subjectBarWrap');
+  destroyChart('subBar');
+  const bySubject = {};
+  D.sessions.forEach(s=>{
+    if(!bySubject[s.subject]) bySubject[s.subject]={q:0,a:0};
+    bySubject[s.subject].q+=s.total; bySubject[s.subject].a+=s.acertos;
+  });
+  const keys = Object.keys(bySubject);
+  if(!keys.length) { wrap.innerHTML='<div style="padding:20px;text-align:center;color:var(--text3);font-size:13px">Sem dados ainda</div>'; return; }
+  const h = Math.max(keys.length*48+60, 100);
+  wrap.innerHTML = `<div style="position:relative;height:${h}px"><canvas id="subBarCanvas" role="img" aria-label="Barras horizontais de acertos por matéria"></canvas></div>`;
+  const pctsArr = keys.map(k=>Math.round(bySubject[k].a/bySubject[k].q*100));
+  charts.subBar = new Chart($id('subBarCanvas').getContext('2d'), {
+    type:'bar',
+    data:{
+      labels:keys,
+      datasets:[{
+        data:pctsArr,
+        backgroundColor:keys.map(k=>subjectColor(k)+'CC'),
+        borderColor:keys.map(k=>subjectColor(k)),
+        borderWidth:1,borderRadius:4,
+      }]
+    },
+    options:{
+      indexAxis:'y',
+      responsive:true,maintainAspectRatio:false,
+      plugins:{legend:{display:false},tooltip:{callbacks:{label:d=>d.raw+'%'}}},
+      scales:{
+        x:{min:0,max:100,ticks:{callback:v=>v+'%'},grid:{color:'rgba(0,0,0,.04)'}},
+        y:{ticks:{font:{size:12}},grid:{display:false}}
+      }
+    }
+  });
+}
+
+function renderPerfTable() {
+  const el = $id('perfTable');
+  const bySubject = {};
+  D.sessions.forEach(s=>{
+    if(!bySubject[s.subject]) bySubject[s.subject]={q:0,a:0,sessions:0};
+    bySubject[s.subject].q+=s.total;
+    bySubject[s.subject].a+=s.acertos;
+    bySubject[s.subject].sessions++;
+  });
+  const keys = Object.keys(bySubject).sort((a,b)=>bySubject[b].q-bySubject[a].q);
+  if(!keys.length) { el.innerHTML='<div style="padding:20px;text-align:center;color:var(--text3);font-size:13px">Sem dados ainda</div>'; return; }
+  el.innerHTML = `<table class="perf-table">
+    <thead><tr>
+      <th>Matéria</th>
+      <th style="text-align:right">Sessões</th>
+      <th style="text-align:right">Questões</th>
+      <th style="text-align:right">Acertos</th>
+      <th style="text-align:right">%</th>
+    </tr></thead>
+    <tbody>${keys.map(k=>{
+      const {q,a,sessions}=bySubject[k];
+      const pct=Math.round(a/q*100);
+      const bc=pct>=70?'badge-green':pct>=50?'badge-amber':'badge-red';
+      const color=subjectColor(k);
+      return `<tr>
+        <td><span class="subject-dot-sm" style="background:${color}"></span>${k}</td>
+        <td style="text-align:right;color:var(--text2)">${sessions}</td>
+        <td style="text-align:right;color:var(--text2)">${q}</td>
+        <td style="text-align:right;color:var(--text2)">${a}</td>
+        <td style="text-align:right"><span class="badge ${bc}">${pct}%</span></td>
+      </tr>`;
+    }).join('')}</tbody>
+  </table>`;
+}
+
+// ==================== SUBJECTS TAB ====================
+function renderSubjectManager() {
+  const el = $id('subjectManager');
+  const keys = Object.keys(D.subjects);
+  if(!keys.length) {
+    el.innerHTML = `<div class="empty">
+      <div class="empty-icon">📖</div>
+      <div class="empty-txt">Nenhuma matéria cadastrada ainda.</div>
+    </div>`;
+    return;
+  }
+  el.innerHTML = keys.map((name,i)=>{
+    const color = COLORS[i%COLORS.length];
+    const subcats = D.subjects[name]||{};
+    const subcatKeys = Object.keys(subcats);
+    const sessions = D.sessions.filter(s=>s.subject===name);
+    const qTotal = sessions.reduce((a,s)=>a+s.total,0);
+    const pct = qTotal ? Math.round(sessions.reduce((a,s)=>a+s.acertos,0)/qTotal*100) : null;
+    const subcatsHTML = subcatKeys.length ? subcatKeys.map(sc=>{
+      const subsubs = subcats[sc]||[];
+      return `<div class="subcat-row">
+        <div class="subcat-name">
+          <strong>${sc}</strong>
+          ${subsubs.length?`<div class="subcat-subsubs">${subsubs.map(ss=>`<span class="subcat-subsub">${ss}</span>`).join('')}</div>`:''}
+        </div>
+        <button class="btn-danger" onclick="deleteSubcat('${name}','${sc}')">×</button>
+      </div>`;
+    }).join('')+`
+      <div class="add-subcat-row">
+        <input class="add-subcat-input" type="text" placeholder="Nova subcategoria..." id="newSub_${CSS.escape(name)}" onkeydown="if(event.key==='Enter')addSubcat('${name}')">
+        <button class="add-subcat-btn" onclick="addSubcat('${name}')">Adicionar</button>
+      </div>
+    ` : `<div style="font-size:13px;color:var(--text3);margin-bottom:10px">Nenhuma subcategoria ainda.</div>
+      <div class="add-subcat-row">
+        <input class="add-subcat-input" type="text" placeholder="Nova subcategoria..." id="newSub_${CSS.escape(name)}" onkeydown="if(event.key==='Enter')addSubcat('${name}')">
+        <button class="add-subcat-btn" onclick="addSubcat('${name}')">Adicionar</button>
+      </div>`;
+    return `<div class="subject-card">
+      <div class="subject-card-header" onclick="toggleSubject('subBody_${i}')">
+        <div class="subject-color-bar" style="background:${color}"></div>
+        <div class="subject-info">
+          <div class="subject-name">${name}</div>
+          <div class="subject-meta">${subcatKeys.length} subcat. · ${qTotal} questões${pct!==null?' · '+pct+'% acertos':''}</div>
+        </div>
+        <div class="subject-actions">
+          ${pct!==null?`<span class="badge ${pct>=70?'badge-green':pct>=50?'badge-amber':'badge-red'}">${pct}%</span>`:''}
+          <button class="btn-danger" onclick="event.stopPropagation();deleteSubject('${name}')">Remover</button>
+          <svg width="14" height="14" viewBox="0 0 14 14" fill="none" style="color:var(--text3);flex-shrink:0"><path d="M3 5l4 4 4-4" stroke="currentColor" stroke-width="1.5" stroke-linecap="round"/></svg>
+        </div>
+      </div>
+      <div class="subject-body" id="subBody_${i}">${subcatsHTML}</div>
+    </div>`;
+  }).join('');
+}
+
+function toggleSubject(id) {
+  const el = $id(id);
+  el.classList.toggle('open');
+}
+
+function deleteSubject(name) {
+  showConfirm(`Remover "${name}"?`,'As sessões registradas não serão apagadas.',()=>{
+    delete D.subjects[name]; saveData(); renderSubjectManager(); showToast('Matéria removida');
+  });
+}
+function deleteSubcat(subject, subcat) {
+  showConfirm(`Remover "${subcat}"?`,'',()=>{
+    delete D.subjects[subject][subcat]; saveData(); renderSubjectManager(); showToast('Subcategoria removida');
+  });
+}
+function addSubcat(subject) {
+  const inp = document.querySelector(`#newSub_${CSS.escape(subject)}`);
+  if(!inp) return;
+  const val = inp.value.trim();
+  if(!val) return;
+  if(!D.subjects[subject]) D.subjects[subject]={};
+  if(!D.subjects[subject][val]) D.subjects[subject][val]=[];
+  saveData(); inp.value=''; renderSubjectManager();
+  showToast(`Subcategoria "${val}" adicionada`);
+}
+
+// ==================== NEW SUBJECT MODAL ====================
+function openNewSubjectModal() { $id('newSubjectOverlay').style.display='flex'; setTimeout(()=>$id('newSubjectIn').focus(),100); }
+function closeNewSubjectModal() { $id('newSubjectOverlay').style.display='none'; }
+function saveNewSubject() {
+  const name = $id('newSubjectIn').value.trim();
+  if(!name) { showToast('Digite o nome da matéria'); return; }
+  if(D.subjects[name]) { showToast('Matéria já existe'); return; }
+  D.subjects[name] = {};
+  saveData();
+  $id('newSubjectIn').value = '';
+  closeNewSubjectModal();
+  renderSubjectManager();
+  showToast(`"${name}" adicionada`);
+}
+
+// ==================== SESSION MODAL ====================
+let modalStep = 1;
+
+function openSessionModal() {
+  $id('sessionOverlay').style.display = 'flex';
+  $id('sessionDate').value = today();
+  $id('subjectIn').value = '';
+  $id('subcatIn').value = '';
+  $id('subsubIn').value = '';
+  $id('totalQIn').value = '';
+  $id('acertosIn').value = '';
+  $id('errosIn').value = '';
+  $id('ratioPreview').style.display = 'none';
+  goToStep1();
+  renderSubjectPills('');
+  setTimeout(()=>$id('subjectIn').focus(),200);
+}
+
+function closeSessionModal() { $id('sessionOverlay').style.display = 'none'; }
+
+$id('sessionOverlay').addEventListener('click', e => {
+  if(e.target === $id('sessionOverlay')) closeSessionModal();
+});
+$id('newSubjectOverlay').addEventListener('click', e => {
+  if(e.target === $id('newSubjectOverlay')) closeNewSubjectModal();
+});
+
+function goToStep1() {
+  modalStep=1;
+  $id('mstep1').style.display='block';
+  $id('mstep2').style.display='none';
+  setSteps(1);
+}
+function setSteps(n) {
+  ['sd1','sd2','sd3'].forEach((id,i)=>{
+    $id(id).className='step-dot'+(i<n?' done':i===n-1?' active':'');
+  });
+}
+
+function step1Next() {
+  const subj = $id('subjectIn').value.trim();
+  const subc = $id('subcatIn').value.trim();
+  if(!subj) { showToast('Informe a matéria'); return; }
+  if(!subc) { showToast('Informe a subcategoria'); return; }
+  // persist subject/subcat/subsub
+  if(!D.subjects[subj]) D.subjects[subj]={};
+  if(!D.subjects[subj][subc]) D.subjects[subj][subc]=[];
+  const subsub = $id('subsubIn').value.trim();
+  if(subsub && !D.subjects[subj][subc].includes(subsub)) D.subjects[subj][subc].push(subsub);
+  saveData();
+  // show summary
+  const path = [subj, subc, subsub].filter(Boolean).join(' › ');
+  $id('step2Summary').textContent = path + ' · ' + fmtDateLong($id('sessionDate').value);
+  modalStep=2;
+  $id('mstep1').style.display='none';
+  $id('mstep2').style.display='block';
+  setSteps(2);
+  setTimeout(()=>$id('totalQIn').focus(),100);
+}
+
+function updateRatio() {
+  const t=parseInt($id('totalQIn').value)||0;
+  const a=parseInt($id('acertosIn').value)||0;
+  if(t>0 && a>=0 && a<=t) {
+    $id('errosIn').value=t-a;
+    showRatio(t,a,t-a);
+  }
+}
+function updateRatioAuto() {
+  const t=parseInt($id('totalQIn').value)||0;
+  const a=parseInt($id('acertosIn').value)||0;
+  if(!t && a>0) $id('totalQIn').value=a+(parseInt($id('errosIn').value)||0);
+  updateRatio();
+}
+function updateRatioFromErros() {
+  const t=parseInt($id('totalQIn').value)||0;
+  const e=parseInt($id('errosIn').value)||0;
+  if(t>0 && e>=0 && e<=t) {
+    $id('acertosIn').value=t-e;
+    showRatio(t,t-e,e);
+  }
+}
+function showRatio(t,a,e) {
+  if(!t){$id('ratioPreview').style.display='none';return}
+  const pct=Math.round(a/t*100);
+  $id('rpAcertos').textContent=pct+'% ('+a+')';
+  $id('rpErros').textContent=(100-pct)+'% ('+e+')';
+  $id('rpBar').style.width=pct+'%';
+  $id('ratioPreview').style.display='block';
+}
+
+function saveSession() {
+  const t=parseInt($id('totalQIn').value)||0;
+  const a=parseInt($id('acertosIn').value)||0;
+  const e=parseInt($id('errosIn').value)||0;
+  if(!t||t<1){showToast('Informe o total de questões');return}
+  if(a<0||e<0){showToast('Valores inválidos');return}
+  if(a+e!==t){showToast(`${a} + ${e} ≠ ${t} — verifique os valores`);return}
+  D.sessions.push({
+    date: $id('sessionDate').value||today(),
+    subject: $id('subjectIn').value.trim(),
+    subcat: $id('subcatIn').value.trim(),
+    subsubcat: $id('subsubIn').value.trim(),
+    total:t, acertos:a, erros:e
+  });
+  saveData();
+  closeSessionModal();
+  renderHome();
+  showToast('Sessão salva! 🎉');
+}
+
+// ==================== AUTOCOMPLETE PILLS ====================
+function onSubjectInput(val) {
+  renderSubjectPills(val);
+  const show = val.trim().length > 0;
+  $id('subcatGroupEl').style.display = show ? 'block' : 'none';
+  if(show) { $id('subcatIn').value=''; $id('subsubIn').value=''; renderSubcatPills(''); }
+  $id('subsubGroupEl').style.display = 'none';
+}
+function renderSubjectPills(filter) {
+  const el = $id('subjectPills');
+  const keys = Object.keys(D.subjects).filter(s=>!filter||s.toLowerCase().includes(filter.toLowerCase()));
+  el.innerHTML = keys.slice(0,8).map(s=>
+    `<div class="pill${$id('subjectIn').value===s?' active':''}" onclick="selectSubject('${s.replace(/'/g,"\\'")}')"><div>${s}</div></div>`
+  ).join('');
+}
+function selectSubject(name) {
+  $id('subjectIn').value = name;
+  $id('subcatGroupEl').style.display = 'block';
+  $id('subcatIn').value = ''; $id('subsubIn').value = '';
+  renderSubcatPills('');
+  renderSubjectPills(name);
+  $id('subsubGroupEl').style.display = 'none';
+  setTimeout(()=>$id('subcatIn').focus(),80);
+}
+function onSubcatInput(val) {
+  renderSubcatPills(val);
+  const show = val.trim().length > 0;
+  $id('subsubGroupEl').style.display = show ? 'block' : 'none';
+  if(show) { $id('subsubIn').value=''; renderSubsubPills(''); }
+}
+function renderSubcatPills(filter) {
+  const el = $id('subcatPills');
+  const subj = $id('subjectIn').value.trim();
+  const subcats = D.subjects[subj]||{};
+  const keys = Object.keys(subcats).filter(s=>!filter||s.toLowerCase().includes(filter.toLowerCase()));
+  el.innerHTML = keys.slice(0,6).map(s=>
+    `<div class="pill${$id('subcatIn').value===s?' active':''}" onclick="selectSubcat('${s.replace(/'/g,"\\'")}')"><div>${s}</div></div>`
+  ).join('');
+}
+function selectSubcat(name) {
+  $id('subcatIn').value = name;
+  $id('subsubGroupEl').style.display = 'block';
+  $id('subsubIn').value = '';
+  renderSubcatPills(name);
+  renderSubsubPills('');
+  setTimeout(()=>$id('subsubIn').focus(),80);
+}
+function onSubsubInput(val) { renderSubsubPills(val); }
+function renderSubsubPills(filter) {
+  const el = $id('subsubPills');
+  const subj = $id('subjectIn').value.trim();
+  const subc = $id('subcatIn').value.trim();
+  const subsubs = (D.subjects[subj]||{})[subc]||[];
+  const filtered = subsubs.filter(s=>!filter||s.toLowerCase().includes(filter.toLowerCase()));
+  el.innerHTML = filtered.slice(0,6).map(s=>
+    `<div class="pill${$id('subsubIn').value===s?' active':''}" onclick="$id('subsubIn').value='${s.replace(/'/g,"\\'")}';renderSubsubPills('${s.replace(/'/g,"\\'")}')"><div>${s}</div></div>`
+  ).join('');
+}
+
+// ==================== TAB SWITCHING ====================
+function switchTab(t) {
+  ['home','stats','subjects'].forEach(x=>{
+    $id('tab-'+x).style.display = x===t ? 'block' : 'none';
+    $id('btn-'+x).classList.toggle('active', x===t);
+  });
+  if(t==='stats') renderStatsTab();
+  if(t==='subjects') renderSubjectManager();
+}
+
+// ==================== INIT ====================
+$id('topDate').textContent = new Date().toLocaleDateString('pt-BR',{weekday:'long',day:'numeric',month:'long',year:'numeric'});
+renderHome();
+</script>
 </body>
 </html>
